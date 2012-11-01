@@ -79,7 +79,7 @@
 #pragma mark - Actions
 
 -(void)add {
-	SPDispatchAsync(^{
+	dispatch_libspotify_async(^{
 		sp_signup_userdata_success success;
 		success.success = true;
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
@@ -91,7 +91,7 @@
 }
 
 -(void)cancel {
-	SPDispatchAsync(^{
+	dispatch_libspotify_async(^{
 		sp_signup_userdata_success success;
 		success.success = false;
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
