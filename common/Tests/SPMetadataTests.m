@@ -40,17 +40,13 @@
 #import "SPToplist.h"
 #import "SPAsyncLoading.h"
 #import "SPSession.h"
-
-static NSString * const kArtistLoadingTestURI = @"spotify:artist:26dSoYclwsYLMAKD3tpOr4"; // Britney Spears
-static NSString * const kArtistBrowseLoadingTestURI = @"spotify:artist:5zzrJD2jXrE9dZ1AklRFcL"; //KT Tunstall
-static NSString * const kAlbumLoadingTestURI = @"spotify:album:50KUdiSuV2MmBmreFPl3PE"; // Barenaked Ladies Live
-static NSString * const kAlbumBrowseLoadingTestURI = @"spotify:album:7IH5SRyEVemZWfhjYmWtT1"; //Wall-E Soundtrack
-static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cMIXrVD"; // Spotify Test Track
+#import "TestConstants.h"
 
 @implementation SPMetadataTests
 
 -(void)testArtistMetadataLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	[SPArtist artistWithArtistURL:[NSURL URLWithString:kArtistLoadingTestURI]
 						inSession:[SPSession sharedSession]
 						 callback:^(SPArtist *artist) {
@@ -66,7 +62,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testAlbumMetadataLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	[SPAlbum albumWithAlbumURL:[NSURL URLWithString:kAlbumLoadingTestURI]
 					 inSession:[SPSession sharedSession]
 					  callback:^(SPAlbum *album) {
@@ -83,7 +80,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testArtistBrowseMetadataLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	[SPArtistBrowse browseArtistAtURL:[NSURL URLWithString:kArtistBrowseLoadingTestURI]
 							inSession:[SPSession sharedSession]
 								 type:SP_ARTISTBROWSE_NO_TRACKS
@@ -102,7 +100,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testAlbumBrowseMetadataLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	[SPAlbumBrowse browseAlbumAtURL:[NSURL URLWithString:kAlbumBrowseLoadingTestURI]
 						  inSession:[SPSession sharedSession]
 						   callback:^(SPAlbumBrowse *albumBrowse) {
@@ -120,7 +119,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testTrackMetadataLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	[SPTrack trackForTrackURL:[NSURL URLWithString:kTrackLoadingTestURI]
 					inSession:[SPSession sharedSession]
 					 callback:^(SPTrack *track) {
@@ -136,7 +136,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testImageLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval((kSPAsyncLoadingDefaultTimeout * 2) + kDefaultNonAsyncLoadingTestTimeout);
 	[SPAlbum albumWithAlbumURL:[NSURL URLWithString:kAlbumLoadingTestURI]
 					 inSession:[SPSession sharedSession]
 					  callback:^(SPAlbum *album) {
@@ -156,7 +157,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testUserTopListLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout + kDefaultNonAsyncLoadingTestTimeout);
 	SPToplist *userToplist = [SPToplist toplistForCurrentUserInSession:[SPSession sharedSession]];
 	
 	[SPAsyncLoading waitUntilLoaded:userToplist timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -169,7 +171,8 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 }
 
 -(void)testLocaleToplistLoading {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout);
 	SPToplist *localeToplist = [SPToplist toplistForLocale:[[NSLocale alloc] initWithLocaleIdentifier:@"SE"] inSession:[SPSession sharedSession]];
 	
 	[SPAsyncLoading waitUntilLoaded:localeToplist timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -181,7 +184,5 @@ static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cM
 		SPPassTest();
 	}];
 }
-
-
 
 @end

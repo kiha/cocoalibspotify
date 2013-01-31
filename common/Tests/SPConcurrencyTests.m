@@ -38,18 +38,13 @@
 #import "SPPlaylist.h"
 #import "SPTrack.h"
 #import "SPUser.h"
-
-static NSString * const kArtistLoadingTestURI = @"spotify:artist:26dSoYclwsYLMAKD3tpOr4"; // Britney Spears
-static NSString * const kAlbumLoadingTestURI = @"spotify:album:50KUdiSuV2MmBmreFPl3PE"; // Barenaked Ladies Live
-static NSString * const kTrackLoadingTestURI = @"spotify:track:5iIeIeH3LBSMK92cMIXrVD"; // Spotify Test Track
-static NSString * const kPlaylistLoadingTestURI = @"spotify:user:spotify:playlist:3kWPOhEmuMs8Mfa1xP0Wh4";
-static NSString * const kUserLoadingTestURI = @"spotify:user:spotify";
-static NSString * const kSearchLoadingTestURI = @"spotify:search:counting+crows";
-static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0344f5e557df2b10fa5b0968";
+#import "TestConstants.h"
 
 @implementation SPConcurrencyTests
 
 -(void)testSessionPropertyCallbacks {
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 
 	// Ensure all block properties come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -64,7 +59,9 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testSessionInvalidConvenienceGetterCallbacks {
+-(void)testInvalidGetterCallbacks {
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -112,7 +109,9 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testSessionConvenienceGetterCallbacks {
+-(void)testValidGetterCallbacks {
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -160,7 +159,9 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testClassInvalidConvenienceConstructorCallbacks {
+-(void)testInvalidConstructorCallbacks {
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];
@@ -197,7 +198,9 @@ static NSString * const kImageLoadingTestURI = @"spotify:image:a0457147cb2972cf0
 	}];
 }
 
--(void)testClassConvenienceConstructorCallbacks {
+-(void)testValidConstructorCallbacks {
+
+	SPAssertTestCompletesInTimeInterval(kDefaultNonAsyncLoadingTestTimeout);
 	
 	// Ensure all blocks come back on the main queue
 	SPSession *session = [SPSession sharedSession];

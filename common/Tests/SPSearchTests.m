@@ -34,14 +34,13 @@
 #import "SPAsyncLoading.h"
 #import "SPSession.h"
 #import "SPSearch.h"
-
-static NSString * const kStandardSearchQuery = @"Counting Crows";
-static NSString * const kLiveSearchQuery = @"Counti";
+#import "TestConstants.h"
 
 @implementation SPSearchTests
 
 -(void)testStandardSearch {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout);
 	SPSearch *search = [SPSearch searchWithSearchQuery:kStandardSearchQuery inSession:[SPSession sharedSession]];
 	
 	[SPAsyncLoading waitUntilLoaded:search timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {
@@ -56,7 +55,8 @@ static NSString * const kLiveSearchQuery = @"Counti";
 }
 
 -(void)testLiveSearch {
-	
+
+	SPAssertTestCompletesInTimeInterval(kSPAsyncLoadingDefaultTimeout);
 	SPSearch *search = [SPSearch liveSearchWithSearchQuery:kLiveSearchQuery inSession:[SPSession sharedSession]];
 	
 	[SPAsyncLoading waitUntilLoaded:search timeout:kSPAsyncLoadingDefaultTimeout then:^(NSArray *loadedItems, NSArray *notLoadedItems) {

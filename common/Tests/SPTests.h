@@ -32,6 +32,20 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+	kTestStateWaiting,
+	kTestStateRunning,
+	kTestStatePassed,
+	kTestStateFailed
+} SPTestState;
+
+@interface SPTestUIPlaceholder : NSObject
+
+@property (nonatomic, readwrite, copy) NSString *name;
+@property (nonatomic, readwrite) SPTestState state;
+
+@end
+
 @interface SPTests : NSObject
 
 #define SPPassTest() [self passTest:_cmd]; return;
@@ -48,9 +62,14 @@ if (!(condition)) {	\
 return; \
 }
 
+#define SPAssertTestCompletesInTimeInterval(t) [self failTest:_cmd afterTimeout:t];
+
 -(void)passTest:(SEL)testSelector;
 -(void)failTest:(SEL)testSelector format:(NSString *)format, ...;
+-(void)failTest:(SEL)testSelector afterTimeout:(NSTimeInterval)timeout;
 
 -(void)runTests:(void (^)(NSUInteger passCount, NSUInteger failCount))block;
+
+@property (nonatomic, readwrite, copy) NSArray *uiPlaceholders;
 
 @end

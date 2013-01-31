@@ -47,7 +47,7 @@
 
 -(id)initWithPlaceholderTrack:(sp_track *)track atIndex:(int)index inPlaylist:(SPPlaylist *)aPlaylist {
 	
-	NSAssert(dispatch_get_current_queue() == [SPSession libSpotifyQueue], @"Not on correct queue!");
+	SPAssertOnLibSpotifyThread();
 	
 	if ((self = [super init])) {
 		self.playlist = aPlaylist;
@@ -64,7 +64,7 @@
 		self.dateAdded = [NSDate dateWithTimeIntervalSince1970:sp_playlist_track_create_time(self.playlist.playlist, index)];
 		self.creator = [SPUser userWithUserStruct:sp_playlist_track_creator(self.playlist.playlist, index)
 										inSession:self.playlist.session];
-		[self setUnreadFromLibSpotify:sp_playlist_track_seen(self.playlist.playlist, index)];
+		[self setUnreadFromLibSpotify:!sp_playlist_track_seen(self.playlist.playlist, index)];
 		
 		const char *msg = sp_playlist_track_message(self.playlist.playlist, index);
 		if (msg != NULL)
@@ -138,7 +138,7 @@
 @synthesize unread = _unread;
 
 -(void)setUnread:(BOOL)unread {
-	dispatch_async([SPSession libSpotifyQueue], ^() { sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread); });
+	SPDispatchAsync(^() { sp_playlist_track_set_seen(self.playlist.playlist, self.itemIndex, !unread); });
 	_unread = unread;
 }
 

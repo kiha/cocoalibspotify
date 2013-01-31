@@ -79,10 +79,9 @@
 #pragma mark - Actions
 
 -(void)add {
-	dispatch_async([SPSession libSpotifyQueue], ^{
+	SPDispatchAsync(^{
 		sp_signup_userdata_success success;
 		success.success = true;
-		NSLog(@"Performing SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED with success: %@", @(success.success));
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -92,10 +91,9 @@
 }
 
 -(void)cancel {
-	dispatch_async([SPSession libSpotifyQueue], ^{
+	SPDispatchAsync(^{
 		sp_signup_userdata_success success;
 		success.success = false;
-		NSLog(@"Performing SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED with success: %@", @(success.success));
 		sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CONNECT_TO_FACEBOOK_COMPLETED, &success);
 		
 		dispatch_async(dispatch_get_main_queue(), ^{

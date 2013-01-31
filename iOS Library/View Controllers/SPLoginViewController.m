@@ -81,6 +81,7 @@ static NSMutableDictionary *loginControllerCache;
 		self.session = aSession;
 		self.navigationBar.barStyle = UIBarStyleBlack;
 		self.modalPresentationStyle = UIModalPresentationFormSheet;
+		self.dismissesAfterLogin = YES;
 		
 		[[NSNotificationCenter defaultCenter] addObserver:self 
 												 selector:@selector(sessionDidLogin:)
@@ -106,6 +107,7 @@ static NSMutableDictionary *loginControllerCache;
 @synthesize session;
 @synthesize waitingForFacebookPermissions;
 @synthesize loginDelegate;
+@synthesize dismissesAfterLogin;
 
 
 -(void)setAllowsCancel:(BOOL)allowsCancel {
@@ -120,7 +122,7 @@ static NSMutableDictionary *loginControllerCache;
 
 -(void)sessionDidLogin:(NSNotification *)notification {
 	
-	dispatch_async([SPSession libSpotifyQueue], ^{
+	SPDispatchAsync(^{
 		int num_licenses = sp_session_signup_get_unaccepted_licenses(self.session.session, NULL, 0);
 	
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,7 +148,7 @@ static NSMutableDictionary *loginControllerCache;
 		
 		[self handleShowSignupPage:SP_SIGNUP_PAGE_NONE loading:NO featureMask:0 recentUserName:nil];
 		
-		dispatch_async([SPSession libSpotifyQueue], ^{
+		SPDispatchAsync(^{
 			int num_licenses = sp_session_signup_get_unaccepted_licenses(self.session.session, NULL, 0);
 			const char **licenses = malloc(sizeof(const char *) * num_licenses);
 			num_licenses = sp_session_signup_get_unaccepted_licenses(self.session.session, licenses, num_licenses);
@@ -170,7 +172,7 @@ static NSMutableDictionary *loginControllerCache;
 	} else {
 		//Success!
 		
-		dispatch_async([SPSession libSpotifyQueue], ^{
+		SPDispatchAsync(^{
 			const char **licenses = malloc(sizeof(char *) * 10);
 			int num_licenses = sp_session_signup_get_unaccepted_licenses(self.session.session, licenses, 10);
 			sp_signup_userdata_with_accepted_licenses licenses_info;
@@ -209,13 +211,11 @@ static NSMutableDictionary *loginControllerCache;
 }
 
 -(void)signupDidPushBack {
-	NSLog(@"Performing SP_SIGNUP_ACTION_GO_BACK");
-	dispatch_async([SPSession libSpotifyQueue], ^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_GO_BACK, NULL); });
+	SPDispatchAsync(^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_GO_BACK, NULL); });
 }
 
 -(void)signupDidPushCancel {
-	NSLog(@"Performing SP_SIGNUP_ACTION_CANCEL_SIGNUP");
-	dispatch_async([SPSession libSpotifyQueue], ^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CANCEL_SIGNUP, NULL); });
+	SPDispatchAsync(^() { sp_session_signup_perform_action(self.session.session, SP_SIGNUP_ACTION_CANCEL_SIGNUP, NULL); });
 	[self handleShowSignupPage:SP_SIGNUP_PAGE_NONE loading:NO featureMask:0 recentUserName:nil];
 }
 
@@ -225,13 +225,21 @@ static NSMutableDictionary *loginControllerCache;
 
 -(void)viewWillDisappear:(BOOL)animated {
 	self.shown = NO;
+	SPLoginLogicViewController *root = [[self viewControllers] objectAtIndex:0];
+
+	[root viewWillDisappear:animated];
+	[super viewWillDisappear:animated];
 }
 
 -(void)viewDidDisappear:(BOOL)animated {
 	// Since we're a shared instance reset state
 	SPLoginLogicViewController *root = [[self viewControllers] objectAtIndex:0];
 	[root resetState];
+	[root viewDidDisappear:animated];
+
 	[self popToViewController:root animated:NO];
+
+	[super viewDidDisappear:animated];
 }
 
 -(void)showIfNeeded {
@@ -287,7 +295,9 @@ static NSMutableDictionary *loginControllerCache;
 		nav.modalPresentationStyle = UIModalPresentationFormSheet;
 		
 		vc.completionBlock = ^() {
-			[targetViewController dismissModalViewControllerAnimated:YES];
+			if (self.dismissesAfterLogin) {
+				[targetViewController dismissModalViewControllerAnimated:YES];
+			}
 			[self.loginDelegate loginViewController:self didCompleteSuccessfully:success];
 		};
 		
